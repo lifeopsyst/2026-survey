@@ -16,7 +16,7 @@
         }
 
         .container {
-            max-width: 500px;
+            max-width: 520px;
             margin: auto;
             background: white;
             padding: 25px;
@@ -39,12 +39,23 @@
             border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
-            background: #4a90e2;
             color: white;
         }
 
-        button:hover {
-            background: #357bd8;
+        .wealth-btn {
+            background: #2ecc71;
+        }
+
+        .health-btn {
+            background: #e74c3c;
+        }
+
+        .knowledge-btn {
+            background: #9b59b6;
+        }
+
+        .travel-btn {
+            background: #f39c12;
         }
 
         .bar-container {
@@ -53,6 +64,8 @@
         }
 
         .bar-label {
+            display: flex;
+            justify-content: space-between;
             font-size: 14px;
             margin-bottom: 4px;
         }
@@ -60,9 +73,24 @@
         .bar {
             height: 24px;
             border-radius: 6px;
-            background: #4a90e2;
             margin-bottom: 15px;
-            transition: width 0.5s;
+            transition: width 0.4s ease;
+        }
+
+        .wealth-bar {
+            background: #2ecc71;
+        }
+
+        .health-bar {
+            background: #e74c3c;
+        }
+
+        .knowledge-bar {
+            background: #9b59b6;
+        }
+
+        .travel-bar {
+            background: #f39c12;
         }
 
         .footer {
@@ -79,60 +107,75 @@
         <h1>🎉 2026 New Year Resolution Survey</h1>
         <p>Which area will you focus on improving in 2026?</p>
 
-        <div class="option"><button onclick="vote('wealth')">💰 Wealth</button></div>
-        <div class="option"><button onclick="vote('health')">💪 Health</button></div>
-        <div class="option"><button onclick="vote('knowledge')">📚 Knowledge</button></div>
-        <div class="option"><button onclick="vote('travel')">✈️ Traveling</button></div>
+        <div class="option">
+            <button class="wealth-btn" onclick="castVote('wealth')">💰 Wealth</button>
+        </div>
+        <div class="option">
+            <button class="health-btn" onclick="castVote('health')">💪 Health</button>
+        </div>
+        <div class="option">
+            <button class="knowledge-btn" onclick="castVote('knowledge')">📚 Knowledge</button>
+        </div>
+        <div class="option">
+            <button class="travel-btn" onclick="castVote('travel')">✈️ Traveling</button>
+        </div>
 
         <div class="bar-container">
-            <div class="bar-label">Wealth</div>
-            <div class="bar" id="wealthBar"></div>
+            <div class="bar-label"><span>Wealth</span><span id="wealthCount">0</span></div>
+            <div class="bar wealth-bar" id="wealthBar"></div>
 
-            <div class="bar-label">Health</div>
-            <div class="bar" id="healthBar"></div>
+            <div class="bar-label"><span>Health</span><span id="healthCount">0</span></div>
+            <div class="bar health-bar" id="healthBar"></div>
 
-            <div class="bar-label">Knowledge</div>
-            <div class="bar" id="knowledgeBar"></div>
+            <div class="bar-label"><span>Knowledge</span><span id="knowledgeCount">0</span></div>
+            <div class="bar knowledge-bar" id="knowledgeBar"></div>
 
-            <div class="bar-label">Traveling</div>
-            <div class="bar" id="travelBar"></div>
+            <div class="bar-label"><span>Traveling</span><span id="travelCount">0</span></div>
+            <div class="bar travel-bar" id="travelBar"></div>
         </div>
 
-        <div class="footer">
-            Live results update instantly • Standalone app
-        </div>
+        <div class="footer">Standalone • Local • Reliable</div>
     </div>
 
     <script>
-        const options = ['wealth', 'health', 'knowledge', 'travel'];
+        const OPTIONS = ['wealth', 'health', 'knowledge', 'travel'];
+        const STORAGE_KEY = 'surveyVotes2026';
 
-        function getVotes() {
-            let votes = localStorage.getItem('surveyVotes');
-            if (!votes) {
-                votes = { wealth: 0, health: 0, knowledge: 0, travel: 0 };
-                localStorage.setItem('surveyVotes', JSON.stringify(votes));
+        function defaultVotes() {
+            return { wealth: 0, health: 0, knowledge: 0, travel: 0 };
+        }
+
+        function loadVotes() {
+            try {
+                const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                return OPTIONS.every(o => typeof data?.[o] === 'number') ? data : defaultVotes();
+            } catch {
+                return defaultVotes();
             }
-            return JSON.parse(localStorage.getItem('surveyVotes'));
         }
 
-        function vote(option) {
-            let votes = getVotes();
-            votes[option]++;
-            localStorage.setItem('surveyVotes', JSON.stringify(votes));
-            renderBars();
+        function saveVotes(votes) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
         }
 
-        function renderBars() {
-            const votes = getVotes();
-            const total = options.reduce((sum, o) => sum + votes[o], 0) || 1;
+        function castVote(option) {
+            const votes = loadVotes();
+            votes[option] += 1;
+            saveVotes(votes);
+            render(votes);
+        }
 
-            options.forEach(o => {
+        function render(votes = loadVotes()) {
+            const total = OPTIONS.reduce((sum, o) => sum + votes[o], 0) || 1;
+
+            OPTIONS.forEach(o => {
                 const percent = (votes[o] / total) * 100;
                 document.getElementById(o + 'Bar').style.width = percent + '%';
+                document.getElementById(o + 'Count').textContent = votes[o];
             });
         }
 
-        renderBars();
+        render();
     </script>
 
 </body>
