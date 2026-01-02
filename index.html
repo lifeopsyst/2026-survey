@@ -1,183 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>2026 New Year Resolution Survey</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>2026 Resolution Survey</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
 
-        .container {
-            max-width: 520px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
+.container {
+    max-width: 520px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
 
-        h1 {
-            color: #333;
-        }
+h1 {
+    margin-bottom: 8px;
+}
 
-        .option {
-            margin: 12px 0;
-        }
+p {
+    color: #555;
+}
 
-        button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            color: white;
-        }
+/* Option buttons */
+.option-btn {
+    width: 100%;
+    padding: 14px;
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
 
-        .wealth-btn {
-            background: #2ecc71;
-        }
+.option-btn.selected {
+    outline: 3px solid #4a90e2;
+}
 
-        .health-btn {
-            background: #e74c3c;
-        }
+.option-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
-        .knowledge-btn {
-            background: #9b59b6;
-        }
+.wealth { background: #2ecc71; }
+.health { background: #e74c3c; }
+.knowledge { background: #9b59b6; }
+.travel { background: #f39c12; color: #000; }
 
-        .travel-btn {
-            background: #f39c12;
-        }
+/* Submit button */
+.submit-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 30px;
+    border: none;
+    background: #4a90e2;
+    color: white;
+    cursor: pointer;
+}
 
-        .bar-container {
-            margin-top: 30px;
-            text-align: left;
-        }
+.submit-btn:disabled {
+    background: #b0c4de;
+    cursor: not-allowed;
+}
 
-        .bar-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
+/* Chart */
+.chart {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 170px;
+    margin-top: 30px;
+}
 
-        .bar {
-            height: 24px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            transition: width 0.4s ease;
-        }
+.bar-wrap {
+    width: 22%;
+}
 
-        .wealth-bar {
-            background: #2ecc71;
-        }
+.count {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
 
-        .health-bar {
-            background: #e74c3c;
-        }
+.bar-bg {
+    height: 130px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
 
-        .knowledge-bar {
-            background: #9b59b6;
-        }
+.bar-fill {
+    width: 100%;
+    height: 0%;
+    border-radius: 10px;
+    transition: height 0.4s ease;
+}
 
-        .travel-bar {
-            background: #f39c12;
-        }
+.bar-wealth { background: #2ecc71; }
+.bar-health { background: #e74c3c; }
+.bar-knowledge { background: #9b59b6; }
+.bar-travel { background: #f39c12; }
 
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #777;
-        }
-    </style>
+.label {
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.footer {
+    margin-top: 18px;
+    font-size: 12px;
+    color: #777;
+}
+</style>
 </head>
 
 <body>
 
-    <div class="container">
-        <h1>🎉 2026 New Year Resolution Survey</h1>
-        <p>Which area will you focus on improving in 2026?</p>
+<div class="container">
+    <h1>🎯 2026 Resolution Survey</h1>
+    <p>Choose ONE area to improve in 2026</p>
 
-        <div class="option">
-            <button class="wealth-btn" onclick="castVote('wealth')">💰 Wealth</button>
-        </div>
-        <div class="option">
-            <button class="health-btn" onclick="castVote('health')">💪 Health</button>
-        </div>
-        <div class="option">
-            <button class="knowledge-btn" onclick="castVote('knowledge')">📚 Knowledge</button>
-        </div>
-        <div class="option">
-            <button class="travel-btn" onclick="castVote('travel')">✈️ Traveling</button>
-        </div>
+    <button class="option-btn wealth" onclick="selectOption('wealth', this)">💰 Wealth</button>
+    <button class="option-btn health" onclick="selectOption('health', this)">💪 Health</button>
+    <button class="option-btn knowledge" onclick="selectOption('knowledge', this)">📚 Knowledge</button>
+    <button class="option-btn travel" onclick="selectOption('travel', this)">✈️ Traveling</button>
 
-        <div class="bar-container">
-            <div class="bar-label"><span>Wealth</span><span id="wealthCount">0</span></div>
-            <div class="bar wealth-bar" id="wealthBar"></div>
+    <button class="submit-btn" id="submitBtn" onclick="submitVote()" disabled>
+        Submit Vote
+    </button>
 
-            <div class="bar-label"><span>Health</span><span id="healthCount">0</span></div>
-            <div class="bar health-bar" id="healthBar"></div>
-
-            <div class="bar-label"><span>Knowledge</span><span id="knowledgeCount">0</span></div>
-            <div class="bar knowledge-bar" id="knowledgeBar"></div>
-
-            <div class="bar-label"><span>Traveling</span><span id="travelCount">0</span></div>
-            <div class="bar travel-bar" id="travelBar"></div>
+    <div class="chart">
+        <div class="bar-wrap">
+            <div class="count" id="wealthCount">0</div>
+            <div class="bar-bg"><div id="wealthBar" class="bar-fill bar-wealth"></div></div>
+            <div class="label">Wealth</div>
         </div>
 
-        <div class="footer">Standalone • Local • Reliable</div>
+        <div class="bar-wrap">
+            <div class="count" id="healthCount">0</div>
+            <div class="bar-bg"><div id="healthBar" class="bar-fill bar-health"></div></div>
+            <div class="label">Health</div>
+        </div>
+
+        <div class="bar-wrap">
+            <div class="count" id="knowledgeCount">0</div>
+            <div class="bar-bg"><div id="knowledgeBar" class="bar-fill bar-knowledge"></div></div>
+            <div class="label">Knowledge</div>
+        </div>
+
+        <div class="bar-wrap">
+            <div class="count" id="travelCount">0</div>
+            <div class="bar-bg"><div id="travelBar" class="bar-fill bar-travel"></div></div>
+            <div class="label">Travel</div>
+        </div>
     </div>
 
-    <script>
-        const OPTIONS = ['wealth', 'health', 'knowledge', 'travel'];
-        const STORAGE_KEY = 'surveyVotes2026';
+    <div class="footer">One submission per device</div>
+</div>
 
-        function defaultVotes() {
-            return { wealth: 0, health: 0, knowledge: 0, travel: 0 };
-        }
+<script>
+const STORAGE_KEY = "survey2026_single_vote";
+const OPTIONS = ["wealth","health","knowledge","travel"];
+let selected = null;
 
-        function loadVotes() {
-            try {
-                const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
-                return OPTIONS.every(o => typeof data?.[o] === 'number') ? data : defaultVotes();
-            } catch {
-                return defaultVotes();
-            }
-        }
+function loadState() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+        votes: { wealth:0, health:0, knowledge:0, travel:0 },
+        submitted: false
+    };
+}
 
-        function saveVotes(votes) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
-        }
+function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
 
-        function castVote(option) {
-            const votes = loadVotes();
-            votes[option] += 1;
-            saveVotes(votes);
-            render(votes);
-        }
+function selectOption(option, btn) {
+    const state = loadState();
+    if (state.submitted) return;
 
-        function render(votes = loadVotes()) {
-            const total = OPTIONS.reduce((sum, o) => sum + votes[o], 0) || 1;
+    selected = option;
+    document.getElementById("submitBtn").disabled = false;
 
-            OPTIONS.forEach(o => {
-                const percent = (votes[o] / total) * 100;
-                document.getElementById(o + 'Bar').style.width = percent + '%';
-                document.getElementById(o + 'Count').textContent = votes[o];
-            });
-        }
+    document.querySelectorAll(".option-btn").forEach(b => b.classList.remove("selected"));
+    btn.classList.add("selected");
+}
 
-        render();
-    </script>
+function submitVote() {
+    if (!selected) return;
+
+    const state = loadState();
+    if (state.submitted) return;
+
+    state.votes[selected]++;
+    state.submitted = true;
+    saveState(state);
+
+    lockUI();
+    render(state.votes);
+}
+
+function lockUI() {
+    document.querySelectorAll(".option-btn").forEach(b => b.disabled = true);
+    document.getElementById("submitBtn").disabled = true;
+}
+
+function render(votes) {
+    const total = OPTIONS.reduce((s,o)=>s+votes[o],0) || 1;
+
+    OPTIONS.forEach(o => {
+        document.getElementById(o+"Count").textContent = votes[o];
+        document.getElementById(o+"Bar").style.height =
+            (votes[o] / total * 100) + "%";
+    });
+}
+
+(function init() {
+    const state = loadState();
+    render(state.votes);
+    if (state.submitted) lockUI();
+})();
+</script>
 
 </body>
-
 </html>
