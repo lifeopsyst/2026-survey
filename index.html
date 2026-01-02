@@ -15,7 +15,7 @@ body {
 }
 
 .container {
-    max-width: 520px;
+    max-width: 540px;
     margin: auto;
     background: white;
     padding: 25px;
@@ -24,14 +24,15 @@ body {
 }
 
 h1 {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
-p {
+.subtitle {
     color: #555;
+    margin-bottom: 12px;
 }
 
-/* Option buttons */
+/* Buttons */
 .option-btn {
     width: 100%;
     padding: 14px;
@@ -58,10 +59,10 @@ p {
 .knowledge { background: #9b59b6; }
 .travel { background: #f39c12; color: #000; }
 
-/* Submit button */
+/* Submit */
 .submit-btn {
-    margin-top: 10px;
     width: 100%;
+    margin-top: 10px;
     padding: 14px;
     font-size: 16px;
     font-weight: bold;
@@ -77,13 +78,24 @@ p {
     cursor: not-allowed;
 }
 
-/* Chart */
+/* Results */
+.results-header {
+    margin-top: 25px;
+    font-weight: bold;
+}
+
+.total {
+    margin-top: 6px;
+    font-size: 14px;
+    color: #333;
+}
+
 .chart {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     height: 170px;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 .bar-wrap {
@@ -92,7 +104,12 @@ p {
 
 .count {
     font-weight: bold;
-    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.percent {
+    font-size: 12px;
+    color: #555;
 }
 
 .bar-bg {
@@ -102,6 +119,7 @@ p {
     display: flex;
     align-items: flex-end;
     overflow: hidden;
+    margin-top: 4px;
 }
 
 .bar-fill {
@@ -133,7 +151,7 @@ p {
 
 <div class="container">
     <h1>🎯 2026 Resolution Survey</h1>
-    <p>Choose ONE area to improve in 2026</p>
+    <div class="subtitle">Choose ONE area to improve in 2026</div>
 
     <button class="option-btn wealth" onclick="selectOption('wealth', this)">💰 Wealth</button>
     <button class="option-btn health" onclick="selectOption('health', this)">💪 Health</button>
@@ -144,27 +162,34 @@ p {
         Submit Vote
     </button>
 
+    <div class="results-header">Survey Results</div>
+    <div class="total" id="totalCount">Total Responses: 0</div>
+
     <div class="chart">
         <div class="bar-wrap">
             <div class="count" id="wealthCount">0</div>
+            <div class="percent" id="wealthPct">0%</div>
             <div class="bar-bg"><div id="wealthBar" class="bar-fill bar-wealth"></div></div>
             <div class="label">Wealth</div>
         </div>
 
         <div class="bar-wrap">
             <div class="count" id="healthCount">0</div>
+            <div class="percent" id="healthPct">0%</div>
             <div class="bar-bg"><div id="healthBar" class="bar-fill bar-health"></div></div>
             <div class="label">Health</div>
         </div>
 
         <div class="bar-wrap">
             <div class="count" id="knowledgeCount">0</div>
+            <div class="percent" id="knowledgePct">0%</div>
             <div class="bar-bg"><div id="knowledgeBar" class="bar-fill bar-knowledge"></div></div>
             <div class="label">Knowledge</div>
         </div>
 
         <div class="bar-wrap">
             <div class="count" id="travelCount">0</div>
+            <div class="percent" id="travelPct">0%</div>
             <div class="bar-bg"><div id="travelBar" class="bar-fill bar-travel"></div></div>
             <div class="label">Travel</div>
         </div>
@@ -174,15 +199,26 @@ p {
 </div>
 
 <script>
-const STORAGE_KEY = "survey2026_single_vote";
+const STORAGE_KEY = "survey2026_professional";
 const OPTIONS = ["wealth","health","knowledge","travel"];
 let selected = null;
 
-function loadState() {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+function defaultState() {
+    return {
         votes: { wealth:0, health:0, knowledge:0, travel:0 },
         submitted: false
     };
+}
+
+function loadState() {
+    try {
+        const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return s && OPTIONS.every(o => typeof s.votes[o] === "number")
+            ? s
+            : defaultState();
+    } catch {
+        return defaultState();
+    }
 }
 
 function saveState(state) {
@@ -220,12 +256,15 @@ function lockUI() {
 }
 
 function render(votes) {
-    const total = OPTIONS.reduce((s,o)=>s+votes[o],0) || 1;
+    const total = OPTIONS.reduce((s,o)=>s+votes[o],0);
+    document.getElementById("totalCount").textContent =
+        "Total Responses: " + total;
 
     OPTIONS.forEach(o => {
+        const pct = total ? Math.round(votes[o]/total*100) : 0;
         document.getElementById(o+"Count").textContent = votes[o];
-        document.getElementById(o+"Bar").style.height =
-            (votes[o] / total * 100) + "%";
+        document.getElementById(o+"Pct").textContent = pct + "%";
+        document.getElementById(o+"Bar").style.height = pct + "%";
     });
 }
 
